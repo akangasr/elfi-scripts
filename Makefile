@@ -18,12 +18,15 @@ endif
 # Install
 .PHONY: install
 install:
+	pip install numpy
 	pip install -e .[dev]
 
 # Install into a virtual environment
 .PHONY: install-venv
 install-venv: $(VIRTUALENV)
-	. $(WORKON); pip install -e .[dev]
+	. $(WORKON)
+	pip install numpy
+	pip install -e .[dev]
 
 .PHONY: clean-venv
 clean-venv:

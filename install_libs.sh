@@ -41,7 +41,7 @@ unset CFLAGS
 unset CXXFLAGS
 unset LDFLAGS
 
-# Install abc4py
+# Install abcpy
 make -f ${FILEDIR}/Makefile all
 
 echo ""

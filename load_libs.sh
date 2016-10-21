@@ -12,6 +12,7 @@ then
         module load Python/3.5.1-goolf-triton-2016a
         echo "----------MODULES-----------"
         module list
+        echo "----------MODULES-----------"
         echo " "
     fi
 fi

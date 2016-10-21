@@ -20,6 +20,10 @@ endif
 install:
 	pip install numpy
 	pip install -e .[dev]
+	pip install git+https://github.com/dask/dask.git
+	pip install git+https://github.com/dask/distributed.git
+	pip install python-hostlist
+	pip install jupyter
 
 # Install into a virtual environment
 .PHONY: install-venv
@@ -27,6 +31,10 @@ install-venv: $(VIRTUALENV)
 	. $(WORKON)
 	pip install numpy
 	pip install -e .[dev]
+	pip install git+https://github.com/dask/dask.git
+	pip install git+https://github.com/dask/distributed.git
+	pip install python-hostlist
+	pip install jupyter
 
 .PHONY: clean-venv
 clean-venv:

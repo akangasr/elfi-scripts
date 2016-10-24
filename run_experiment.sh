@@ -14,7 +14,8 @@ SLURM=0
 MASTER=0
 JOBFILE=""
 IP=""
-PORT=9786  # dask default port
+PORT=8786  # dask default port
+ERRFILE=/dev/null
 
 # process command line parameters
 # http://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
@@ -34,9 +35,13 @@ case $key in
     JOBFILE=$2
     shift
     ;;
+    --errfile)
+    ERRFILE=$2
+    shift
+    ;;
     *)
     # unknown option
-    echo "usage: ./run_experiment.sh --slurm --port http_port --jobfile jobfile.py"
+    echo "usage: ./run_experiment.sh --slurm --port http_port --jobfile jobfile.py --errfile err.txt"
     exit
     ;;
 esac
@@ -73,23 +78,22 @@ else
     #echo "MASTER IP ${MASTER_IP}"
 
     if [[ "${ME}" == "${MASTER_NODE}" && "${LOCALID}" -eq 0 ]]; then
-        echo "Master ${ME}/${LOCALID}: Starting dask-scheduler at ${MASTER_IP}:${PORT}.."
-        dask-scheduler --http-port ${PORT} --no-bokeh &
+        >&2 echo "$(date) Master ${ME}/${LOCALID}: Starting dask-scheduler at ${MASTER_IP}:${PORT}.."
+        dask-scheduler --port ${PORT} --no-bokeh &
         SCHED=$!  # Scheduler process id
-        sleep 20  # Let workers start before cotinuing
-        echo "Master ${ME}/${LOCALID}: Executing job file.."
-        echo "python3 ${JOBFILE}"
-        python3 ${JOBFILE}
-        echo "Master ${ME}/${LOCALID}: Terminating dask.."
+        >&2 echo "$(date) Master ${ME}/${LOCALID}: Executing job file.."
+        >&2 echo "$(date) python3 ${JOBFILE} ${PORT}"
+        python3 ${JOBFILE} ${PORT}
+        >&2 echo "$(date) Master ${ME}/${LOCALID}: Terminating dask.."
         kill ${SCHED}
-        echo "Master ${ME}/${LOCALID}: Scheduler terminated"
+        >&2 echo "$(date) Master ${ME}/${LOCALID}: Scheduler terminated"
         source ${FILEDIR}/unload_libs.sh
-        echo "Master ${ME}/${LOCALID}: Sending SIGHUP to terminate job.."  # TODO: find better way to do this
+        >&2 echo "$(date) Master ${ME}/${LOCALID}: Sending SIGHUP to terminate job.."  # TODO: find better way to do this
         kill -1 $$
     else
-        echo "Worker ${ME}/${LOCALID}: Starting dask worker.."
+        >&2 echo "$(date) Worker ${ME}/${LOCALID}: Starting dask worker.."
         dask-worker --nthreads 1 --nprocs 1 ${MASTER_IP}:${PORT}
-        echo "Worker ${ME}/${LOCALID}: Worker terminated"
+        >&2 echo "$(date) Worker ${ME}/${LOCALID}: Worker terminated"
     fi
 fi
 

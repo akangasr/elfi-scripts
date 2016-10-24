@@ -5,29 +5,30 @@
 #SBATCH --constraint=[ivb|wsm]
 #SBATCH -p batch
 #SBATCH -o _OUT_FILE_
+#SBATCH -e _ERR_FILE_
 
-# hack for experiments, this should work from all nodes in Triton
-WORKDIR="${WRKDIR}/abc4py/slurm_data/_JOBID_"
+# WRKDIR this should work from all nodes in Triton
+WORKDIR="${WRKDIR}/elfi/slurm_data/_JOBID_"
 DB_FILE="${WORKDIR}/_JOBID_.db"
 HOSTNAME=`hostname`
 mkdir -p $WORKDIR
 
-echo "------------ENV-------------"
-env
-echo "------------ENV-------------"
-echo " "
-echo "job shell: starting job at ${HOSTNAME}"
-echo "* slurm file: _SLURM_FILE_"
-echo "* job file:   _JOB_FILE_"
-echo "* out file:   _OUT_FILE_"
+env > _ERR_FILE_
+
+echo "Starting job at ${HOSTNAME}"
 echo "* job id:     _JOBID_"
 echo "* processes:  _NPROC_"
 echo "* work dir:   ${WORKDIR}"
-echo "* data dir:   _DATA_DIR_"
+echo "* slurm file: _SLURM_FILE_"
+echo "* job file:   _JOB_FILE_"
+echo "* out file:   _OUT_FILE_"
+echo "* err file:   _ERR_FILE_"
+echo "---------------------------------------"
 
-srun bash _PROJ_DIR_/elfi-scripts/run_experiment.sh --slurm --port _PORT_ --jobfile _JOB_FILE_
+srun bash _PROJ_DIR_/elfi-scripts/run_experiment.sh --slurm --port _PORT_ --jobfile _JOB_FILE_ --errfile _ERR_FILE_
 
-echo "job shell: job ended"
+echo "---------------------------------------"
+echo "Job ended"
 
 
 

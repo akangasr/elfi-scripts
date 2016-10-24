@@ -84,12 +84,13 @@ echo "* MEMORY:    ${MEM}"
 echo "* JOBID:     ${JOBID}"
 echo "* NPROC:     ${NPROC}"
 echo "* DIR:       ${DATA_DIR}"
-echo "* HTTP PORT: ${PORT}"
+echo "* DASK PORT: ${PORT}"
 
 # create job script file and param file
 SLURM_FILE="${DATA_DIR}/${JOBID}.sh"
 JOB_FILE="${DATA_DIR}/job.py"
 OUT_FILE="${DATA_DIR}/out.txt"
+ERR_FILE="${DATA_DIR}/err.txt"
 cp "${PROJ_DIR}/${JOBFILE}" ${JOB_FILE}
 cat elfi-scripts/slurm_job_template.sh |
     sed "s;_TIME_;${TIME};g" |
@@ -99,6 +100,7 @@ cat elfi-scripts/slurm_job_template.sh |
     sed "s;_SLURM_FILE_;${SLURM_FILE};g" |
     sed "s;_JOB_FILE_;${JOB_FILE};g" |
     sed "s;_OUT_FILE_;${OUT_FILE};g" |
+    sed "s;_ERR_FILE_;${ERR_FILE};g" |
     sed "s;_JOBID_;${JOBID};g" |
     sed "s;_PORT_;${PORT};g" |
     sed "s;_NPROC_;${NPROC};g" > $SLURM_FILE

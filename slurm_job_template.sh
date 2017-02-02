@@ -17,6 +17,7 @@ env > _ERR_FILE_
 
 echo "Starting job at ${HOSTNAME}"
 echo "* job id:     _JOBID_"
+echo "* rnd seed:   _SEED_"
 echo "* processes:  _NPROC_"
 echo "* work dir:   ${WORKDIR}"
 echo "* slurm file: _SLURM_FILE_"
@@ -25,7 +26,7 @@ echo "* out file:   _OUT_FILE_"
 echo "* err file:   _ERR_FILE_"
 echo "---------------------------------------"
 
-srun bash _PROJ_DIR_/elfi-scripts/run_experiment.sh --slurm --port _PORT_ --jobfile _JOB_FILE_ --errfile _ERR_FILE_
+srun bash _PROJ_DIR_/elfi-scripts/run_experiment.sh --slurm --port _PORT_ --seed _SEED_ --jobfile _JOB_FILE_ --errfile _ERR_FILE_
 
 echo "---------------------------------------"
 echo "Job ended"

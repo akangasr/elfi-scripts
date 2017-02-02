@@ -20,6 +20,7 @@ JOBID="run_at_${DATETIME}"
 JOBFILE="job.py"
 NPROC=1
 PORT=9786  # dask default port
+SEED=12345
 
 # process command line parameters
 # http://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
@@ -52,14 +53,24 @@ case $key in
     PORT="$2"
     shift
     ;;
+    -s|--seed)
+    SEED="$2"
+    shift
+    ;;
     *)
     # unknown option
-    echo "usage: ./run_experiment_slurm.sh -t <max_time> -m <max_mem> -i <job_identifier> -n <number_of_processes> -p <port> -j <job_file>"
+    echo "usage: ./run_experiment_slurm.sh -t <max_time> -m <max_mem> -i <job_identifier> -n <number_of_processes> -p <port> -j <job_file> -s <seed>"
     exit
     ;;
 esac
 shift
 done
+
+if [ $PORT -gt 65535 ];
+then
+    echo "Port must be in range 0-65535"
+    exit -1
+fi
 
 IDENTIFIER="${JOBID}"
 
@@ -85,6 +96,7 @@ echo "* JOBID:     ${JOBID}"
 echo "* NPROC:     ${NPROC}"
 echo "* DIR:       ${DATA_DIR}"
 echo "* DASK PORT: ${PORT}"
+echo "* SEED:      ${SEED}"
 
 # create job script file and param file
 SLURM_FILE="${DATA_DIR}/${JOBID}.sh"
@@ -103,6 +115,7 @@ cat elfi-scripts/slurm_job_template.sh |
     sed "s;_ERR_FILE_;${ERR_FILE};g" |
     sed "s;_JOBID_;${JOBID};g" |
     sed "s;_PORT_;${PORT};g" |
+    sed "s;_SEED_;${SEED};g" |
     sed "s;_NPROC_;${NPROC};g" > $SLURM_FILE
 chmod ugo+x $SLURM_FILE
 echo "Saving results to ${DATA_DIR}"

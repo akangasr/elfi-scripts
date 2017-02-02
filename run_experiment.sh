@@ -15,6 +15,7 @@ MASTER=0
 JOBFILE=""
 IP=""
 PORT=8786  # dask default port
+SEED=12345
 ERRFILE=/dev/null
 
 # process command line parameters
@@ -31,6 +32,10 @@ case $key in
     PORT=$2
     shift
     ;;
+    --seed)
+    SEED=$2
+    shift
+    ;;
     --jobfile)
     JOBFILE=$2
     shift
@@ -41,7 +46,7 @@ case $key in
     ;;
     *)
     # unknown option
-    echo "usage: ./run_experiment.sh --slurm --port http_port --jobfile jobfile.py --errfile err.txt"
+    echo "usage: ./run_experiment.sh --slurm --port http_port --seed random_seed --jobfile jobfile.py --errfile err.txt"
     exit
     ;;
 esac
@@ -82,8 +87,8 @@ else
         dask-scheduler --port ${PORT} --no-bokeh &
         SCHED=$!  # Scheduler process id
         >&2 echo "$(date) Master ${ME}/${LOCALID}: Executing job file.."
-        >&2 echo "$(date) python3 ${JOBFILE} ${PORT}"
-        python3 ${JOBFILE} ${PORT}
+        >&2 echo "$(date) python3 ${JOBFILE} ${SEED} ${PORT}"
+        python3 ${JOBFILE} ${SEED} ${PORT}
         >&2 echo "$(date) Master ${ME}/${LOCALID}: Terminating dask.."
         kill ${SCHED}
         >&2 echo "$(date) Master ${ME}/${LOCALID}: Scheduler terminated"
